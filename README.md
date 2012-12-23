@@ -28,14 +28,14 @@ Usage:
 <dl>
   <dt><a href='#trackingmode'>trackingMode</a></dt>
   <dd>Track links as page views or events.</dd>
-  <dt><a href='#hostregex'>hostRegex</a></dt>
-  <dd>A custom regex to match what is considered a 'local' link. Great for subdomains.</dd>
   <dt><a href='#extensions'>extensions</a></dt>
-  <dd>Custom file extensions.</dd>
-  <dt><a href='#trackfiles'>trackFiles</a></dt>
-  <dd>Toggle file tracking, matched by 'extensions' option.</dd>
+  <dd>Custom file extensions.</dd>  
+  <dt><a href='#hostregex'>hostRegex</a></dt>
+  <dd>A custom regex to match what is considered a 'local' link. Great for subdomains.</dd>  
   <dt><a href='#trackexternallinks'>trackExternalLinks</a></dt>
   <dd>Toggle external link tracking.</dd>
+  <dt><a href='#trackfiles'>trackFiles</a></dt>
+  <dd>Toggle file tracking, matched by 'extensions' option.</dd>  
   <dt><a href='#trackmailtos'>trackMailtos</a></dt>
   <dd>Toggle mailto link tracking.</dd>
   <dt><a href='#bindevents'>bindEvents</a></dt>
@@ -98,21 +98,21 @@ gtrack.init({
 ```
 > Note: hostRegex can also be a RegExp object.
 
-## trackFiles
-Toggles file tracking. Defaults to ```true``` (file tracking on).
-
-```javascript
-gtrack.init({
-    trackFiles: false
-});
-```
-
 ## trackExternalLinks
 Toggles external link tracking. Defaults to ```true``` (external link tracking on).
 
 ```javascript
 gtrack.init({
     trackExternalLinks: false
+});
+```
+
+## trackFiles
+Toggles file tracking. Defaults to ```true``` (file tracking on).
+
+```javascript
+gtrack.init({
+    trackFiles: false
 });
 ```
 
