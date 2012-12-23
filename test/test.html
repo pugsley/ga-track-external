@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>GA Track External Test</title>
+    <link rel="stylesheet" href="qunit.css">
+</head>
+<body>
+    <div id="qunit"></div>
+
+    <script>
+
+        //
+        // Fake Google Analytics Object
+        // Just sets/get/resets the last pushed object
+        //
+        _gaq = {
+            last: null,
+            push: function(v) {
+                this.last = v;
+            },
+            getLast: function() {
+                return this.last;
+            },
+            resetLast: function() {
+                this.last = null;
+            }
+        };
+
+    </script>
+
+    <script src="../ga-track-external.min.js"></script>
+    <script src="qunit.js"></script>
+
+    <div id="links">
+
+        <!-- Links -->
+        <a href='/' data-type='not-tracked'></a>
+        <a href='/index.html' data-type='not-tracked'></a>
+        <a href='/index.php' data-type='not-tracked'></a>
+
+        <a href='/local' data-type='not-tracked'></a>
+        <a href='/local/' data-type='not-tracked'></a>
+        <a href='/local/index.html' data-type='not-tracked'></a>
+
+        <a href="javascript:alert('rah')" data-type='not-tracked'></a>
+        <a href=" javascript:alert('rah')" data-type='not-tracked'></a>
+
+        <a href='http://example.com/' data-type='external' data-url='example.com/'></a>
+        <a href='http://example.com/external' data-type='external' data-url='example.com/external'></a>
+        <a href='http://example.com/external/' data-type='external' data-url='example.com/external/'></a>
+        <a href='http://example.com/external/index.html' data-type='external' data-url='example.com/external/index.html'></a>
+        <a href='http://example.com/external/index.html?one=two' data-type='external' data-url='example.com/external/index.html?one=two'></a>
+        <a href='http://example.com/external/index.html?one=two#hash' data-type='external' data-url='example.com/external/index.html?one=two'></a>
+
+        <a href='https://example.com/' data-type='external' data-url='example.com/'></a>
+        <a href='https://example.com/external' data-type='external' data-url='example.com/external'></a>
+        <a href='https://example.com/external/' data-type='external' data-url='example.com/external/'></a>
+        <a href='https://example.com/external/index.html' data-type='external' data-url='example.com/external/index.html'></a>
+        <a href='https://example.com/external/index.html?one=two' data-type='external' data-url='example.com/external/index.html?one=two'></a>
+        <a href='https://example.com/external/index.html?one=two#hash' data-type='external' data-url='example.com/external/index.html?one=two'></a>
+
+        <!-- Files -->
+        <a href='/test.doc' data-type='file' data-url='/test.doc'></a>
+        <a href='/local/test.doc' data-type='file' data-url='/local/test.doc'></a>
+        <a href='/local/test.xls' data-type='file' data-url='/local/test.xls'></a>
+
+        <a href='http://example.com/test.doc' data-type='external' data-url='example.com/test.doc'></a>
+        <a href='http://example.com/external/test.doc' data-type='external' data-url='example.com/external/test.doc'></a>
+
+        <!-- Mailto -->
+        <a href='mailto: test@example.com' data-type='mailto' data-url='test@example.com'></a>
+        <a href=' mailto: test@example.com ' data-type='mailto' data-url='test@example.com'></a>
+
+    </div>
+
+
+    <div id='optionLinks'>
+
+        <a id='file_test' href='/local/test.xls'></a>
+        <a id='file_test_2' href='/local/test.moo'></a>
+        <a id='external_test' href='https://example.com/'></a>
+        <a id='mailto_test' href='mailto: test@example.com'></a>
+
+        <a id='regex_test' href='http://www.example.com'></a>
+        <a id='regex_test_2' href='http://example.com'></a>
+        <a id='regex_test_3' href='https://subdomain.example.com'></a>
+        <a id='regex_test_4' href='http://examples.com'></a>
+        <a id='regex_test_5' href='http://theoatmeal.com'></a>
+
+    </div>
+
+    <script>
+
+        // yuck, but needed for now
+        QUnit.config.reorder = false;
+
+        // Tests
+        gtrack.init({
+            bindEvents: true
+        });
+
+        var i, last, expectedType, expectedUrl;
+
+        // Loop though all link elements and test
+        var elements = document.getElementById("links").getElementsByTagName("a");
+
+        test("Default settings", function() {
+
+            for (i = 0; i < elements.length; i++) {
+
+                // Expected types are set in the dom elements
+                expectedType = elements[i].getAttribute("data-type");
+                expectedUrl = elements[i].getAttribute("data-url");
+
+                // Check each element
+                gtrack.check(elements[i]);
+
+                // Get the last thing added
+                last = _gaq.getLast();
+
+                // Check based on type
+                if (expectedType == "not-tracked") {
+                    ok(last == null, elements[i].getAttribute("href") + " not tracked");
+                } else if (expectedType == "external") {
+                    equal(last[1], "External", elements[i].getAttribute("href") + " is tracked as external");
+                } else if (expectedType == "file") {
+                    equal(last[1], "File", elements[i].getAttribute("href") + " is tracked a file");
+                } else if (expectedType == "mailto") {
+                    equal(last[1], "Mailto", elements[i].getAttribute("href") + " is tracked as a mailto");
+                }
+
+                if (expectedType != "not-tracked") {
+                    equal(last[2], expectedUrl, "Check tracked URL");
+                }
+
+                // Reset it
+                _gaq.resetLast();
+            }
+
+        });
+
+
+        test("Check options", function() {
+
+            //
+            // Check mode page
+            //
+            gtrack.setOptions({
+                "mode": "page"
+            });
+
+            // Check the file_test element
+            gtrack.check(document.getElementById("file_test"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            equal("_trackPageview", last[0], "Make sure 'mode' page is working");
+            _gaq.resetLast();
+
+
+            //
+            // Check custom extensions match
+            //
+            gtrack.setOptions({
+                "extensions": "doc|xls"
+            });
+
+            // Check file whose extension shoud match
+            gtrack.check(document.getElementById("file_test"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            ok(last != null, "Custom extensions match");
+
+
+            //
+            // Check custom extensions don't match
+            //
+            gtrack.setOptions({
+                "extensions": "doc|xls"
+            });
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("file_test_2"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            equal(null, last, "Custom extensions don't match");
+
+
+
+            //
+            // Check track external links
+            //
+            gtrack.setOptions({
+                "trackExternalLinks": false
+            });
+
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("external_test"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            equal(null, last, "trackExternalLinks: false disables tracking of external links");
+            _gaq.resetLast();
+
+
+            //
+            // Make sure files still work when external links are disabled
+            //
+            gtrack.setOptions({
+                "trackExternalLinks": false
+            });
+
+            // Check file whose extension shoud match
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("file_test"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            ok(last != null, "File tracking works when trackExternalLinks is false");
+
+
+            //
+            // Make sure trackFiles false works
+            //
+            gtrack.setOptions({
+                "trackFiles": false
+            });
+
+            // Check file whose extension shoud match
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("file_test"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            equal(null, last, "trackFiles: false disables tracking of external links");
+
+
+            //
+            // Make sure trackMailtos false works
+            //
+            gtrack.setOptions({
+                "trackMailtos": false
+            });
+
+            // Check file whose extension shoud match
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("mailto_test"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            equal(null, last, "trackMailtos: false disables tracking of mailto links");
+
+
+            //
+            // Make sure hostRegex works so we can match multiple/subdomains
+            //
+            gtrack.setOptions({
+                "trackExternalLinks": true,
+                "hostRegex": "example\.com"
+            });
+
+            // Test normal domain with www.
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("regex_test"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            ok(last === null, "Test custom hostRegex with www.");
+
+            // Testing without www
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("regex_test_2"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            ok(last === null, "Test custom hostRegex with no subdomain");
+
+            // Testing with subdomain
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("regex_test_3"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            ok(last === null, "Test custom hostRegex with subdomain");
+
+
+            // Test invalid link
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("regex_test_4"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            ok(last != null, "Test custom hostRegex with invalid domain");
+
+
+            // Testing with a regex
+            gtrack.setOptions({
+                "hostRegex": new RegExp("theoatmeal\.com")
+            });
+
+            _gaq.resetLast();
+            gtrack.check(document.getElementById("regex_test_5"));
+
+            // Get the last thing added
+            last = _gaq.getLast();
+
+            ok(last === null, "Test custom RegExp hostRegex with subdomain");
+
+
+        });
+
+
+    </script>
+
+</body>
+</html>
