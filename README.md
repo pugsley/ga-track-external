@@ -3,9 +3,8 @@ ga-track-external
 
 Track external links, files and mailto links.
 
-ga-track-external should be included at the bottom of the page after your Google Analytics code. By default it will track external links, mailto's and files that match the default **extensions** regex.
+**ga-track-external.min.js** should be included at the bottom of the page after your Google Analytics code. By default it will track links, mailto's and files that match the default extensions regex.
 
-Usage:
 ```javascript
 <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -16,11 +15,23 @@ Usage:
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
-</script>
+```
 
-<script type='text/javascript' src='/includes/ga-track-external.js'></script>
+Insert ga-track-external.min.js after Google Analytics code, then initialise it.
+
+```javascript
+<script type='text/javascript' src='/includes/ga-track-external.min.js'></script>
 <script>gtrack.init();</script>
+```
 
+An optional set of options can be passed to the init function.
+
+```javascript
+<script type='text/javascript' src='/includes/ga-track-external.min.js'></script>
+<script>gtrack.init({
+    trackMailtos: false,
+    extensions: "zip|rar|gz"
+});</script>
 ```
 
 ## Options
@@ -46,7 +57,7 @@ Usage:
 
 Defaults to ```event```.
 
-### event
+### 'event'
 When trackingMode is set to "event", external, mailto & file links will be tracked as events:  
 Mailto: ```Event (Category: "Mailto", Action: [Email address])```  
 External: ```Event (Category: "External", Action: [External URL])```  
@@ -58,7 +69,7 @@ gtrack.init({
 });
 ```
 
-### page
+### 'page'
 In page mode external links, mailto & file links will be tracked as page views with the following URL structure.  
 Mailto: ```/mailto/[Email address]```  
 External: ```/external/[External URL]```  
