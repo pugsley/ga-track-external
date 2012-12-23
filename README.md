@@ -23,49 +23,54 @@ Usage:
 
 ```
 
-Options
--------
+## Options
 
-* **trackingMode** Track links as page views or events.  
-* **hostRegex** A custom regex to match what is considered a 'local' link. Great for subdomains.  
-* **extensions** Custom file extension matching.  
-* **trackFiles** Track file links matched by 'extensions'.  
-* **trackExternalLinks** Track external links.  
-* **trackMailtos** Track mailto clicks.  
-* **bindEvents** Bind click events.  
+<dl>
+  <dt><a href='#trackingmode'>trackingMode</a></dt>
+  <dd>Track links as page views or events.</dd>
+  <dt><a href='#hostregex'>hostRegex</a></dt>
+  <dd>A custom regex to match what is considered a 'local' link. Great for subdomains.</dd>
+  <dt><a href='#extensions'>extensions</a></dt>
+  <dd>Custom file extensions.</dd>
+  <dt><a href='#trackfiles'>trackFiles</a></dt>
+  <dd>Toggle file tracking, matched by 'extensions' option.</dd>
+  <dt><a href='#trackexternallinks'>trackExternalLinks</a></dt>
+  <dd>Toggle external link tracking.</dd>
+  <dt><a href='#trackmailtos'>trackMailtos</a></dt>
+  <dd>Toggle mailto link tracking.</dd>
+  <dt><a href='#bindevents'>bindEvents</a></dt>
+  <dd>Toggle event binding.</dd>  
+</dl>
 
-
-### trackingMode [String]
+## trackingMode
 
 Defaults to ```event```.
 
-#### "event"
+### event
 When trackingMode is set to "event", external, mailto & file links will be tracked as events:  
 Mailto: ```Event (Category: "Mailto", Action: [Email address])```  
 External: ```Event (Category: "External", Action: [External URL])```  
 File: ```Event (Category: "File", Action: [File URL])```
 
-Usage:
 ```
 gtrack.init({
     trackingMode: "event"
 });
 ```
 
-#### "page"
+### page
 In page mode external links, mailto & file links will be tracked as page views with the following URL structure.  
 Mailto: ```/mailto/[Email address]```  
 External: ```/external/[External URL]```  
 File: ```/file/[File URL]```
 
-Usage:
 ```
 gtrack.init({
     trackingMode: "page"
 });
 ```
 
-### extensions [String]
+## extensions
 
 Defaults to ```docx?|xlsx?|pptx?|txt|vsd|vxd|eps|jpg|png|gif|svg|pdf|zip|tar|rar|gz|dmg|js|css|exe|wma|mov|avi|wmv|mp3```
 
@@ -79,56 +84,56 @@ gtrack.init({
 });
 ```
 
-### hostRegex [String|RegExp]
-
+## hostRegex
 Defaults to ```^location.host$``` (the current domain)
 
 Customise what is considered a local domain. Perfect when you don't want subdomains to be counted as external links.
 
 For example to consider these domains: ```www.example.com```, ```example.com```, ```subdomain.example.com``` as 'local' specify the hostRegex as ```example\.com$```
+
 ```javascript
 gtrack.init({
     hostRegex: "example\.com"
 });
 ```
-> Note: A RegExp object can also be passed.
+> Note: hostRegex can also be a RegExp object.
 
-### trackFiles (boolean)
-default: true (on)
+## trackFiles
+Toggles file tracking. Defaults to ```true``` (file tracking on).
 
-Turn file tracking on or off.
+```javascript
+gtrack.init({
+    trackFiles: false
+});
+```
 
-Usage:
-<script type='text/javascript' src='/js/ga-track-external.min.js'></script>
-<script type="text/javascript">gtrack.init({trackFiles: false});</script>
+## trackExternalLinks
+Toggles external link tracking. Defaults to ```true``` (external link tracking on).
 
+```javascript
+gtrack.init({
+    trackExternalLinks: false
+});
+```
 
-### trackExternalLinks (true/false)
+## trackMailtos
+Toggles mailto link tracking. Defaults to ```true``` (mailto link tracking on).
 
-Defaults to ```true```. Turn external link tracking on or off.
+```javascript
+gtrack.init({
+    trackMailtos: false
+});
+```
 
-Usage:
-<script type='text/javascript' src='/js/ga-track-external.min.js'></script>
-<script type="text/javascript">gtrack.init({trackExternalLinks: false});</script>
+## bindEvents
+> true or false
 
+Toggles event binding. Defaults to ```true```.
 
-trackMailtos (boolean)
-default: true (on)
-------------------------
+> You shouldn't need to change this unless you're doing something weird.
 
-Turn mailto link tracking on or off.
-
-Usage:
-<script type='text/javascript' src='/js/ga-track-external.min.js'></script>
-<script type="text/javascript">gtrack.init({trackMailtos: false});</script>
-
-
-bindEvents (boolean)
-default: true (on)
-------------------------
-
-Don't bind any events. You shouldn't need to change this unless you're doing something weird.
-
-Usage:
-<script type='text/javascript' src='/js/ga-track-external.min.js'></script>
-<script type="text/javascript">gtrack.init({bindEvents: false});</script>
+```javascript
+gtrack.init({
+    bindEvents: false
+});
+```
